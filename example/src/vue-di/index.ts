@@ -1,46 +1,53 @@
-import { defineComponent, PropOptions } from 'vue-demi'
+import { defineComponent, PropOptions, h } from 'vue-demi'
 import Vue from 'vue'
 import 'reflect-metadata'
+import { refHandler } from './decorators/ref'
+import { Props, propsHandler } from './decorators/props'
+import { getProtoMetadata } from './decorators/utils'
+import { computedHandler } from './decorators/computed'
 
 export function Component() {
 	return function (Component: any) {
 		const proto = Component.prototype
-		if (Component.options__value) return Component.options__value
+		if (Component.options__value) return Vue.extend(Component.options__value())
+
 		const { displayName, emits } = proto
-		const instance = new Component()
-		const props = resolveProps(instance.$props)
+		const props = propsHandler.handler(Component)
+		Component.options__value = () => {
+			const target: any = {}
 
-		Component.options__value = defineComponent({
-			name: displayName || Component.name,
-			props: props,
-			emits: emits || [],
-			setup() {
-				const instance = new Component()
+			return defineComponent({
+				name: displayName || Component.name,
+				props: props,
+				emits: emits || [],
+				setup(props) {
+					const instance = new Component()
+					const descriptors = Object.getOwnPropertyDescriptors(proto)
+					for (const key in descriptors) {
+						if (key !== 'render' && key !== 'constructor') {
+							if (typeof descriptors[key].value === 'function') {
+								instance[key] = instance[key].bind(instance)
+							}
+						}
+					}
 
-				delete instance.$props
-				return instance
-			},
-			render(h) {
-				return proto.render.call(this, h)
-			}
-		})
+					instance.props = props
 
-		return Vue.extend(Component.options__value)
-	}
-}
+					refHandler.handler(instance)
+					computedHandler.handler(instance)
 
-function resolveProps(props: Record<string, any>) {
-	const targetProps: Record<string, PropOptions<string>> = {}
+					target.render = instance.render.bind(instance)
 
-	for (const key in props) {
-		if (props[key]) {
-			targetProps[key] = {
-				default: props[key]
-			}
-		} else {
-			targetProps[key] = {}
+					return instance
+				},
+				render() {
+					return target.render(h)
+				}
+			})
 		}
-	}
 
-	return targetProps
+		const options = Vue.extend(Component.options__value())
+
+		return options
+	}
 }

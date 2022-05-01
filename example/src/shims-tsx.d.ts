@@ -5,7 +5,7 @@ declare global {
 		interface Element extends VNode {}
 		// interface ElementClass extends Vue {}
 		interface ElementAttributesProperty {
-			$props: any // specify the property name to use
+			props: any // specify the property name to use
 		}
 		interface IntrinsicElements {
 			[elem: string]: any

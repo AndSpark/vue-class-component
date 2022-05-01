@@ -1,30 +1,44 @@
-import { defineComponent, ref } from 'vue-demi'
+import { VNodeChildren } from 'vue'
+import { computed, defineComponent, getCurrentInstance, ref, VNode, watch } from 'vue-demi'
 import { Component } from './vue-di'
+import { Computed } from './vue-di/decorators/computed'
+import { Props } from './vue-di/decorators/props'
+import { Ref } from './vue-di/decorators/ref'
+import { createDecorator } from './vue-di/decorators/utils'
 
 class WordProps {
 	name?: string = '345'
 	title: string
-}
-
-type Constructor<T = any> = new (...args: any[]) => T
-
-function props<T = any>(propsClass: Constructor<T>) {
-	return new propsClass()
+	slots?: {
+		name?: () => VNode
+		say?: (name: string) => VNode
+	}
 }
 
 @Component()
 class Word {
-	$props = props(WordProps)
+	@Props(WordProps)
+	props: WordProps
+
+	@Ref()
+	number: number = 1
+
+	@Computed()
+	get val() {
+		return this.number * 2
+	}
 
 	click() {
-		console.log(this.$props)
+		this.number++
 	}
 
 	render() {
 		return (
 			<div>
-				{this.$props.title}
-				<p onClick={() => this.click()}>{this.$props.name}</p>
+				{this.val}
+				<button onClick={() => this.click()}>++</button>
+				{this.props.name}
+				{this.props.slots?.say?.(String(this.number))}
 			</div>
 		)
 	}
@@ -40,8 +54,13 @@ export default defineComponent({
 	render() {
 		return (
 			<div>
-				<Word title={this.title}></Word>
-				<button onClick={() => (this.title += '11')}>+++</button>
+				<Word
+					title={this.title}
+					slots={{
+						name: () => <div>name</div>,
+						say: name => <div>{name}</div>
+					}}
+				></Word>
 			</div>
 		)
 	}
