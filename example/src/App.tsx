@@ -1,10 +1,5 @@
-import { VNodeChildren } from 'vue'
-import { computed, defineComponent, getCurrentInstance, ref, VNode, watch } from 'vue-demi'
-import { Component } from './vue-di'
-import { Computed } from './vue-di/decorators/computed'
-import { Props } from './vue-di/decorators/props'
-import { Ref } from './vue-di/decorators/ref'
-import { createDecorator } from './vue-di/decorators/utils'
+import { defineComponent, getCurrentInstance, ref, VNode } from 'vue-demi'
+import { Component, Computed, Props, Watch, Ref, WatchEffect } from '../../src/index'
 
 class WordProps {
 	name?: string = '345'
@@ -17,26 +12,53 @@ class WordProps {
 
 @Component()
 class Word {
+	$ = getCurrentInstance()?.proxy
+
 	@Props(WordProps)
 	props: WordProps
 
 	@Ref()
 	number: number = 1
 
+	@Ref()
+	btnRef: HTMLButtonElement
+
 	@Computed()
 	get val() {
 		return this.number * 2
 	}
 
+	@Ref()
+	my = {
+		name: '哈哈哈'
+	}
+
 	click() {
-		this.number++
+		console.log(this.btnRef)
+		this.my.name = this.my.name + '1'
+	}
+
+	@WatchEffect()
+	eefe() {
+		if (this.my.name) {
+			console.log('myNameChange')
+		}
+	}
+
+	@Watch(o => o.my, { immediate: true, deep: true })
+	test(newval: any, oldVal: any) {
+		console.log(this.number)
+		console.log(newval, oldVal?.name)
 	}
 
 	render() {
 		return (
 			<div>
+				{this.my.name}
 				{this.val}
-				<button onClick={() => this.click()}>++</button>
+				<button ref='btnRef' onClick={() => this.click()}>
+					++
+				</button>
 				{this.props.name}
 				{this.props.slots?.say?.(String(this.number))}
 			</div>
@@ -47,6 +69,7 @@ class Word {
 export default defineComponent({
 	setup() {
 		const title = ref('1234')
+
 		return {
 			title
 		}

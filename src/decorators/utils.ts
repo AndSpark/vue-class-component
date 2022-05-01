@@ -1,23 +1,25 @@
-export interface MetadataStore<T> {
+import 'reflect-metadata'
+
+export interface MetadataStore<T extends any[]> {
 	key: string | symbol
-	options: T
+	args: T[]
 	desc?: PropertyDescriptor | null
 }
 
-export function createDecorator<T = void>(name: string, allowRepeat = false) {
+export function createDecorator<T extends any[]>(name: string, allowRepeat = false) {
 	const MetadataKey = Symbol(name)
-	const decoratorMethod = function (options: T) {
+	const decoratorMethod = function (...args: T) {
 		return function (target: any, key: string | symbol) {
-			const list: MetadataStore<T | T[]>[] = Reflect.getMetadata(MetadataKey, target) || []
+			const list: MetadataStore<T>[] = Reflect.getMetadata(MetadataKey, target) || []
 			const hasExist = list.find(v => v.key === key)
 			if (!hasExist) {
 				list.push({
 					key,
-					options
+					args: [args]
 				})
 			} else {
-				if (!allowRepeat) hasExist.options = options
-				else if (Array.isArray(hasExist.options)) hasExist.options.push(options)
+				if (!allowRepeat) hasExist.args = [args]
+				else hasExist.args.push(args)
 			}
 			Reflect.defineMetadata(MetadataKey, [...list], target)
 		}
@@ -26,7 +28,11 @@ export function createDecorator<T = void>(name: string, allowRepeat = false) {
 	return decoratorMethod
 }
 
-export function getProtoMetadata<T = void>(target: any, metadataKey: symbol, withDesc = false) {
+export function getProtoMetadata<T extends any[]>(
+	target: any,
+	metadataKey: symbol,
+	withDesc = false
+) {
 	let proto: any
 	if (typeof target === 'function') {
 		proto = target.prototype
@@ -47,12 +53,13 @@ export function getDeepOwnDescriptor(proto: any, key: string | symbol): Property
 	return getDeepOwnDescriptor(Object.getPrototypeOf(proto), key)
 }
 
-export function handleDecorator<T>(
+export function handleDecorator<T extends any[]>(
 	targetThis: any,
 	metadataKey: symbol,
-	handler: (store: MetadataStore<T>) => any
+	handler: (store: MetadataStore<T>) => any,
+	withDesc = false
 ) {
-	const list = getProtoMetadata<T>(targetThis, metadataKey) || []
+	const list = getProtoMetadata<T>(targetThis, metadataKey, withDesc) || []
 	for (const store of list) {
 		handler(store)
 	}

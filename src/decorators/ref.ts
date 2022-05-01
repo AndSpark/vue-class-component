@@ -1,4 +1,4 @@
-import { ref } from 'vue-demi'
+import { getCurrentInstance, ref } from 'vue-demi'
 import { createDecorator, handleDecorator } from './utils'
 
 interface RefDecorator {
@@ -9,13 +9,17 @@ interface RefDecorator {
 export const Ref: RefDecorator = createDecorator('Ref')
 
 function handler(targetThis: Record<any, any>) {
-	handleDecorator<void>(targetThis, Ref.MetadataKey, store => {
+	handleDecorator<[]>(targetThis, Ref.MetadataKey, store => {
 		const { key } = store
 		const keyVal = ref(targetThis[key as string])
+		const refs = getCurrentInstance()?.proxy.$refs
 		Object.defineProperty(targetThis, key, {
 			enumerable: true,
 			configurable: true,
 			get() {
+				if (refs?.[key as string]) {
+					return refs[key as string]
+				}
 				return keyVal.value
 			},
 			set(v) {

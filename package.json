@@ -1,26 +1,31 @@
 {
-  "name": "vue-di",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AndSpark/vue-di.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AndSpark/vue-di/issues"
-  },
-  "homepage": "https://github.com/AndSpark/vue-di#readme",
-  "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/plugin-proposal-decorators": "^7.17.9",
-    "@babel/plugin-proposal-optional-chaining": "^7.16.7",
-    "@babel/plugin-transform-typescript": "^7.16.8",
-    "reflect-metadata": "^0.1.13"
-  }
+	"name": "vue-di",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/AndSpark/vue-di.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/AndSpark/vue-di/issues"
+	},
+	"homepage": "https://github.com/AndSpark/vue-di#readme",
+	"peerDependencies": {
+		"@vue/composition-api": "^1.6.0",
+		"reflect-metadata": "^0.1.13",
+		"vue": "^2.6.14",
+		"vue-demi": "^0.12.1"
+	},
+	"devDependencies": {
+		"@vue/composition-api": "^1.6.0",
+		"reflect-metadata": "^0.1.13",
+		"vue": "^2.6.14",
+		"vue-demi": "^0.12.1"
+	}
 }
