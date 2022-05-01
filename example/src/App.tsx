@@ -1,5 +1,5 @@
 import { defineComponent, getCurrentInstance, ref, VNode } from 'vue-demi'
-import { Component, Computed, Props, Watch, Ref, WatchEffect } from '../../src/index'
+import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook } from '../../src/index'
 
 class WordProps {
 	name?: string = '345'
@@ -17,11 +17,8 @@ class Word {
 	@Props(WordProps)
 	props: WordProps
 
-	@Ref()
-	number: number = 1
-
-	@Ref()
-	btnRef: HTMLButtonElement
+	@Ref() number: number = 1
+	@Ref() btnRef: HTMLButtonElement
 
 	@Computed()
 	get val() {
@@ -33,8 +30,12 @@ class Word {
 		name: '哈哈哈'
 	}
 
+	@Hook(['onMounted', 'onBeforeMount'])
+	hooks() {
+		console.log('hook')
+	}
+
 	click() {
-		console.log(this.btnRef)
 		this.my.name = this.my.name + '1'
 	}
 
@@ -47,7 +48,6 @@ class Word {
 
 	@Watch(o => o.my, { immediate: true, deep: true })
 	test(newval: any, oldVal: any) {
-		console.log(this.number)
 		console.log(newval, oldVal?.name)
 	}
 

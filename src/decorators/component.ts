@@ -5,8 +5,9 @@ import { propsHandler } from './props'
 import { refHandler } from './ref'
 import { watchHandler } from './watch'
 import { watchEffectHandler } from './watchEffect'
+import { HookHandler } from './hook'
 
-const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler]
+const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler, HookHandler]
 
 export function Component() {
 	return function (Component: any) {
