@@ -1,5 +1,5 @@
 {
-	"name": "@andspark/vue-class-component",
+	"name": "vue-class-di",
 	"version": "1.0.0",
 	"description": "",
 	"main": "src/index.ts",
