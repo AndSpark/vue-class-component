@@ -1,5 +1,7 @@
+import { Injectable, SkipSelf } from 'injection-js'
 import { defineComponent, getCurrentInstance, ref, VNode } from 'vue-demi'
-import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook } from '../../src/index'
+import { useCurrentInstance } from '../../src/helper'
+import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook, Service } from '../../src/index'
 
 class WordProps {
 	name?: string = '345'
@@ -10,9 +12,29 @@ class WordProps {
 	}
 }
 
+@Service()
+class WordService {
+	$ = useCurrentInstance()
+
+	@Ref()
+	title: string = 'hello'
+
+	@WatchEffect()
+	hello() {
+		console.log(this.title)
+	}
+
+	@Hook('onBeforeMount')
+	changeTitle() {
+		console.log(this.$)
+	}
+}
+
 @Component()
 class Word {
-	$ = getCurrentInstance()?.proxy
+	constructor(private wordService: WordService) {}
+
+	$ = useCurrentInstance()?.proxy
 
 	@Props(WordProps)
 	props: WordProps
@@ -30,9 +52,10 @@ class Word {
 		name: '哈哈哈'
 	}
 
-	@Hook(['onMounted', 'onBeforeMount'])
+	@Hook(['onMounted'])
 	hooks() {
-		console.log('hook')
+		console.log('onMounted')
+		this.wordService.hello()
 	}
 
 	click() {
@@ -66,6 +89,20 @@ class Word {
 	}
 }
 
+@Component({
+	providers: [WordService]
+})
+class ParentWord {
+	render() {
+		return (
+			<div>
+				<Word title='12344'></Word>
+				哈哈哈哈哈哈
+			</div>
+		)
+	}
+}
+
 export default defineComponent({
 	setup() {
 		const title = ref('1234')
@@ -77,13 +114,7 @@ export default defineComponent({
 	render() {
 		return (
 			<div>
-				<Word
-					title={this.title}
-					slots={{
-						name: () => <div>name</div>,
-						say: name => <div>{name}</div>
-					}}
-				></Word>
+				<ParentWord></ParentWord>
 			</div>
 		)
 	}

@@ -7,10 +7,22 @@
   resolved "https://govfun.com:10073/repository/npm-group/@vue/composition-api/-/composition-api-1.6.0.tgz#41c45672245fff2181f8be1f757c95cb6c9b0316"
   integrity sha512-m/FbsCXn0Ov2QCYUEIt4yupWJLCL6nfZg/Xx2L5VlFUqgJb2iOrbLnkYSV0TO2VUxkBLSFtTZMyG8IIHZFdKNA==
 
+injection-js@^2.4.0:
+  version "2.4.0"
+  resolved "https://govfun.com:10073/repository/npm-group/injection-js/-/injection-js-2.4.0.tgz#ebe8871b1a349f23294eaa751bbd8209a636e754"
+  integrity sha512-6jiJt0tCAo9zjHbcwLiPL+IuNe9SQ6a9g0PEzafThW3fOQi0mrmiJGBJvDD6tmhPh8cQHIQtCOrJuBfQME4kPA==
+  dependencies:
+    tslib "^2.0.0"
+
 reflect-metadata@^0.1.13:
   version "0.1.13"
   resolved "https://govfun.com:10073/repository/npm-group/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
   integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
+
+tslib@^2.0.0:
+  version "2.4.0"
+  resolved "https://govfun.com:10073/repository/npm-group/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
+  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 vue-demi@^0.12.1:
   version "0.12.5"

@@ -1,1 +1,1 @@
-# vue-di
+# vue-class-di
