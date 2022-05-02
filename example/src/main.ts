@@ -4,4 +4,8 @@ import App from './App'
 
 Vue.config.productionTip = false
 
-createApp(App).mount('#app')
+new Vue({
+	el: '#app',
+	//@ts-ignore
+	render: h => h(App)
+})
