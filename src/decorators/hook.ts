@@ -10,7 +10,7 @@ import {
 	onUnmounted,
 	onUpdated
 } from 'vue-demi'
-import { createDecorator, getProtoMetadata, handleDecorator } from './utils'
+import { createDecorator, handleDecorator } from './utils'
 
 const lifecycle = {
 	onActivated,

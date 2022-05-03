@@ -16,6 +16,17 @@ class WordService {
 	}
 }
 
+@Service()
+class WordService2 {
+	@Ref()
+	title: string = 'hello2'
+
+	//各种生命周期
+	@Hook('onBeforeMount')
+	hello() {
+		console.log(this.title)
+	}
+}
 // 组件Props使用class声明，同时可设置默认值
 class WordProps {
 	name?: string = '1234'
@@ -52,7 +63,6 @@ class Word {
 	@Hook(['onMounted'])
 	hooks() {
 		console.log('onMounted')
-		this.wordService.hello()
 	}
 
 	click() {
@@ -81,7 +91,7 @@ class Word {
 
 // 父级组件提供服务，可在子组件中共享
 @Component({
-	providers: [WordService]
+	providers: [WordService2]
 })
 export default class ParentWord {
 	render() {

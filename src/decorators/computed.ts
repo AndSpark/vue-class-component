@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue-demi'
+import { computed } from 'vue-demi'
 import { createDecorator, handleDecorator } from './utils'
 
 interface ComputedDecorator {

@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, h, inject, InjectionKey, provide } from 'vue-demi'
+import { defineComponent, h, inject, InjectionKey, provide } from 'vue-demi'
 import Vue from 'vue'
 import { computedHandler } from './computed'
 import { propsHandler } from './props'
