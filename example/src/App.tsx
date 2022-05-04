@@ -90,9 +90,7 @@ class Word {
 }
 
 // 父级组件提供服务，可在子组件中共享
-@Component({
-	providers: [WordService2]
-})
+@Component({})
 export default class ParentWord {
 	render() {
 		return (

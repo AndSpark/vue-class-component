@@ -92,7 +92,7 @@ export function Component(options?: ComponentOptions) {
 export function resolveComponent(target: { new (...args: []): any }) {
 	// 如果没有使用 injection-js 则不创建注入器
 	if (!Reflect.getMetadata('annotations', target)) return new target()
-	const parent = inject(InjectorKey, undefined)
+	const parent = inject(InjectorKey, null)
 	// 从缓存中拿到解析过得依赖
 	let resolveProviders: ResolvedReflectiveProvider[] = Reflect.getOwnMetadata(
 		MetadataProviderKey,
@@ -118,7 +118,7 @@ export function resolveComponent(target: { new (...args: []): any }) {
 		// 缓存解析过的依赖, 提高性能
 		Reflect.defineMetadata(MetadataProviderKey, resolveProviders, target)
 	}
-	const injector = ReflectiveInjector.fromResolvedProviders(resolveProviders, parent)
+	const injector = ReflectiveInjector.fromResolvedProviders(resolveProviders, parent || undefined)
 
 	provide(InjectorKey, injector)
 
