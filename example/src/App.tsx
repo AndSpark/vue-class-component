@@ -16,17 +16,6 @@ class WordService {
 	}
 }
 
-@Service()
-class WordService2 {
-	@Ref()
-	title: string = 'hello2'
-
-	//各种生命周期
-	@Hook('onBeforeMount')
-	hello() {
-		console.log(this.title)
-	}
-}
 // 组件Props使用class声明，同时可设置默认值
 class WordProps {
 	name?: string = '1234'
@@ -47,7 +36,7 @@ class Word {
 	vueComponent = useVueComponent()
 
 	// 注意：props必须这样声明
-	@Props(WordProps)
+	@Props()
 	props: WordProps
 
 	// Ref声明

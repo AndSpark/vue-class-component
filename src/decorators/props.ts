@@ -2,20 +2,21 @@ import type { PropOptions } from 'vue-demi'
 import type { Constructor } from '../types'
 import { createDecorator, handleDecorator } from './utils'
 
-export const Props: PropsDecorator = createDecorator<[Constructor]>('Props')
+export const Props: PropsDecorator = createDecorator<[]>('Props')
 
 interface PropsDecorator {
-	(options: Constructor): PropertyDecorator
+	(): PropertyDecorator
 	MetadataKey: symbol
 }
 
 function handler(target: any) {
 	let props: Record<string, PropOptions<string>> = {}
-	handleDecorator<[Constructor]>(target, Props.MetadataKey, store => {
+	handleDecorator<[]>(target, Props.MetadataKey, store => {
 		if (Object.keys(props).length) {
 			console.warn('PropsDecorator is more then one, should be one')
 		}
-		props = Object.assign(props, resolveProps(new store.args[0][0]()))
+		const type = Reflect.getMetadata('design:type', target.prototype, store.key)
+		props = Object.assign(props, resolveProps(new type()))
 	})
 	return props
 }
