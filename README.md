@@ -44,7 +44,7 @@ declare global {
 	namespace JSX {
 		interface Element extends VNode {}
 		interface ElementAttributesProperty {
-			props: any // 原本是$props,在setup中返回$props会冲突，这里改成props
+			$props: any //
 		}
 		interface IntrinsicElements {
 			[elem: string]: any
@@ -114,13 +114,13 @@ class FooProps {
 class Foo {
 	// 在组件中用@Props装饰器，并且传入Props类来声明props
 	@Props(FooProps)
-	props: FooProps
+	$props: FooProps
 
 	render() {
 		return (
 			<div>
 				Foo
-				<p>{this.props.title}</p>
+				<p>{this.$props.title}</p>
 			</div>
 		)
 	}

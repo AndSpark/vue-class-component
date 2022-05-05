@@ -37,7 +37,7 @@ class Word {
 
 	// 注意：props必须这样声明
 	@Props()
-	props: WordProps
+	$props: WordProps
 
 	// Ref声明
 	@Ref() number: number = 1
@@ -70,9 +70,9 @@ class Word {
 					++
 				</button>
 				{this.val}
-				{this.props.name}
+				{this.$props.name}
 				{/* 插槽使用 */}
-				{this.props.slots?.say?.(String(this.number))}
+				{this.$props.slots?.say?.(String(this.number))}
 			</div>
 		)
 	}

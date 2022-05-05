@@ -1,4 +1,4 @@
-import { defineComponent, h, inject, InjectionKey, provide } from 'vue-demi'
+import { defineComponent, getCurrentInstance, h, inject, InjectionKey, provide } from 'vue-demi'
 import Vue from 'vue'
 import { computedHandler } from './computed'
 import { propsHandler } from './props'
@@ -66,11 +66,15 @@ export function Component(options?: ComponentOptions) {
 						}
 					}
 
-					instance.props = props
+					const currentInstance = getCurrentInstance()
 
 					handlerList.forEach(handler => handler.handler(instance))
 
 					target.render = instance.render.bind(instance)
+
+					Object.setPrototypeOf(instance, currentInstance?.proxy!)
+
+					delete instance.$props
 
 					return instance
 				},
