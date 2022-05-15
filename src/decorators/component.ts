@@ -58,33 +58,33 @@ export function Component(options?: ComponentOptions) {
 				setup(props) {
 					const instance = resolveComponent(Component)
 					const descriptors = Object.getOwnPropertyDescriptors(proto)
+					const currentInstance = getCurrentInstance()!.proxy
+
 					for (const key in descriptors) {
 						if (key !== 'render' && key !== 'constructor') {
 							if (typeof descriptors[key].value === 'function') {
-								instance[key] = instance[key].bind(instance)
+								instance[key] = instance[key].bind(currentInstance)
 							}
 						}
 					}
 
-					const currentInstance = getCurrentInstance()
-
 					handlerList.forEach(handler => handler.handler(instance))
 
-					target.render = instance.render.bind(instance)
+					target.render = instance.render
 
-					Object.setPrototypeOf(instance, currentInstance?.proxy!)
+					Object.setPrototypeOf(instance, currentInstance)
 
 					delete instance.$props
 
 					return instance
 				},
 				render() {
-					return target.render(h)
+					return target.render.call(this, h)
 				}
 			})
 		}
 
-		const Extended = Vue.extend(Component.options__value())
+		const Extended = Vue.extend(Component.options__value()) as any
 
 		Reflect.defineMetadata(MetadataKey, options, Component)
 		Injectable()(Component)

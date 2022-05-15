@@ -2,7 +2,7 @@ import { Injectable, SkipSelf } from 'injection-js'
 import { defineComponent, getCurrentInstance, ref, VNode } from 'vue-demi'
 import { useCurrentInstance, useVueComponent } from '../../src/helper'
 import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook, Service } from '../../src/index'
-
+import Vue from 'vue'
 // 服务类使用@Service装饰器
 @Service()
 class WordService {
@@ -69,6 +69,7 @@ class Word {
 				<button ref='btnRef' onClick={() => this.click()}>
 					++
 				</button>
+				{this.number}
 				{this.val}
 				{this.$props.name}
 				{/* 插槽使用 */}
