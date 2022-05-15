@@ -3,6 +3,7 @@ import { defineComponent, getCurrentInstance, ref, VNode } from 'vue-demi'
 import { useCurrentInstance, useVueComponent } from '../../src/helper'
 import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook, Service } from '../../src/index'
 import Vue from 'vue'
+import { VueComponentProps } from '../../src/types'
 // 服务类使用@Service装饰器
 @Service()
 class WordService {
@@ -36,8 +37,8 @@ class Word {
 	vueComponent = useVueComponent()
 
 	// 注意：props必须这样声明
-	@Props()
-	$props: WordProps
+	@Props(WordProps)
+	$props: VueComponentProps<WordProps>
 
 	// Ref声明
 	@Ref() number: number = 1
@@ -85,7 +86,12 @@ export default class ParentWord {
 	render() {
 		return (
 			<div>
-				<Word title='12344' slots={{ say: name => <div>我的名字：{name}</div> }}></Word>
+				<Word
+					title='12344'
+					class='12344'
+					style={'color:red'}
+					slots={{ say: name => <div>我的名字：{name}</div> }}
+				></Word>
 				哈哈哈哈哈哈
 			</div>
 		)

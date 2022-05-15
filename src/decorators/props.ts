@@ -5,17 +5,19 @@ import { createDecorator, handleDecorator } from './utils'
 export const Props: PropsDecorator = createDecorator<[]>('Props')
 
 interface PropsDecorator {
-	(): PropertyDecorator
+	(props?: Constructor): PropertyDecorator
 	MetadataKey: symbol
 }
 
 function handler(target: any) {
 	let props: Record<string, PropOptions<string>> = {}
-	handleDecorator<[]>(target, Props.MetadataKey, store => {
-		if (Object.keys(props).length) {
-			console.warn('PropsDecorator is more then one, should be one')
+	handleDecorator<[Constructor]>(target, Props.MetadataKey, store => {
+		let type
+		if (store.args[0][0]) {
+			type = store.args[0][0]
+		} else {
+			type = Reflect.getMetadata('design:type', target.prototype, store.key)
 		}
-		const type = Reflect.getMetadata('design:type', target.prototype, store.key)
 		props = Object.assign(props, resolveProps(new type()))
 	})
 	return props

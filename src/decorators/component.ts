@@ -43,15 +43,13 @@ export interface ComponentOptions {
 }
 
 const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler, HookHandler]
-
+const ignoreKeys = ['class', 'style', '$props']
 export function Component(options?: ComponentOptions) {
 	return function (Component: any) {
 		const proto = Component.prototype
 		const props = propsHandler.handler(Component)
 
 		Component.options__value = () => {
-			const target: any = {}
-
 			return defineComponent({
 				name: proto.name || Component.name,
 				props: props,
@@ -60,26 +58,43 @@ export function Component(options?: ComponentOptions) {
 					const descriptors = Object.getOwnPropertyDescriptors(proto)
 					const currentInstance = getCurrentInstance()!.proxy
 
+					const pro = new Proxy(instance, {
+						get(target, key) {
+							if (target[key]) {
+								return target[key]
+							}
+							//@ts-ignore
+							return currentInstance[key]
+						},
+						set(target, key, value) {
+							target[key] = value
+							return true
+						}
+					})
+
 					for (const key in descriptors) {
 						if (key !== 'render' && key !== 'constructor') {
 							if (typeof descriptors[key].value === 'function') {
-								instance[key] = instance[key].bind(currentInstance)
+								instance[key] = instance[key].bind(pro)
 							}
 						}
 					}
 
-					handlerList.forEach(handler => handler.handler(instance))
+					// 手动暴露的属性
+					for (const key in instance) {
+						if (Object.prototype.hasOwnProperty.call(instance, key)) {
+							if (!ignoreKeys.includes(key)) {
+								//@ts-ignore
+								currentInstance[key] = instance[key]
+							}
+						}
+					}
 
-					target.render = instance.render
-
-					Object.setPrototypeOf(instance, currentInstance)
+					handlerList.forEach(handler => handler.handler(pro))
 
 					delete instance.$props
 
-					return instance
-				},
-				render() {
-					return target.render.call(this, h)
+					return pro.render.bind(pro, h)
 				}
 			})
 		}
