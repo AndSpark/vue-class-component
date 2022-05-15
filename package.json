@@ -1,6 +1,6 @@
 {
 	"name": "vue-class-di",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "",
 	"main": "src/index.ts",
 	"scripts": {
