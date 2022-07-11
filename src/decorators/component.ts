@@ -1,4 +1,13 @@
-import { defineComponent, getCurrentInstance, h, inject, InjectionKey, provide } from 'vue-demi'
+import {
+	defineComponent,
+	getCurrentInstance,
+	h,
+	inject,
+	InjectionKey,
+	provide,
+	reactive,
+	toRefs
+} from 'vue-demi'
 import Vue from 'vue'
 import { computedHandler } from './computed'
 import { propsHandler } from './props'
@@ -50,6 +59,7 @@ export function Component(options?: ComponentOptions) {
 		const props = propsHandler.handler(Component)
 
 		Component.options__value = () => {
+			let pro: any
 			return defineComponent({
 				name: proto.name || Component.name,
 				props: props,
@@ -57,8 +67,7 @@ export function Component(options?: ComponentOptions) {
 					const instance = resolveComponent(Component)
 					const descriptors = Object.getOwnPropertyDescriptors(proto)
 					const currentInstance = getCurrentInstance()!.proxy
-
-					const pro = new Proxy(instance, {
+					pro = new Proxy(instance, {
 						get(target, key) {
 							if (target[key]) {
 								return target[key]
@@ -80,21 +89,13 @@ export function Component(options?: ComponentOptions) {
 						}
 					}
 
-					// 手动暴露的属性
-					for (const key in instance) {
-						if (Object.prototype.hasOwnProperty.call(instance, key)) {
-							if (!ignoreKeys.includes(key)) {
-								//@ts-ignore
-								currentInstance[key] = instance[key]
-							}
-						}
-					}
-
 					handlerList.forEach(handler => handler.handler(pro))
 
 					delete instance.$props
-
-					return pro.render.bind(pro, h)
+					return reactive(pro)
+				},
+				render() {
+					return pro.render.call(this, h)
 				}
 			})
 		}

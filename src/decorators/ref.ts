@@ -17,7 +17,7 @@ function handler(targetThis: Record<any, any>) {
 			enumerable: true,
 			configurable: true,
 			get() {
-				if (refs?.[key as string]) {
+				if (refs?.[key as string] !== undefined) {
 					return refs[key as string]
 				}
 				return keyVal.value

@@ -13,7 +13,7 @@ class WordService {
 	//各种生命周期
 	@Hook('onBeforeMount')
 	hello() {
-		console.log(this.title)
+		console.log((this.title += '1'))
 	}
 }
 
@@ -31,7 +31,7 @@ class WordProps {
 @Component()
 class Word {
 	// 服务类会自动依赖注入，在constructor中的函数相当于在setup中运行
-	constructor(private wordService: WordService) {}
+	constructor(@SkipSelf() private wordService: WordService) {}
 
 	// 如果要使用组件内方法，需先进行声明
 	vueComponent = useVueComponent()
@@ -56,6 +56,9 @@ class Word {
 	}
 
 	click() {
+		console.log(this.vueComponent.$vnode)
+		this.wordService.hello()
+		this.vueComponent.$emit('test', 'dddddd')
 		this.number++
 	}
 
@@ -81,18 +84,25 @@ class Word {
 }
 
 // 父级组件提供服务，可在子组件中共享
-@Component({})
+@Component({
+	providers: [WordService]
+})
 export default class ParentWord {
 	render() {
 		return (
 			<div>
 				<Word
 					title='12344'
+					attrs={{ a: '1234' }}
+					slots={{ say: name => <div>我的名字：{name}</div> }}
+				></Word>
+				哈哈哈哈哈哈
+				<Word
+					title='12344'
 					class='12344'
 					style={'color:red'}
 					slots={{ say: name => <div>我的名字：{name}</div> }}
 				></Word>
-				哈哈哈哈哈哈
 			</div>
 		)
 	}
