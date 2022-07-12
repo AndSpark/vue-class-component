@@ -8,11 +8,12 @@ interface RefDecorator {
 
 export const Ref: RefDecorator = createDecorator('Ref')
 
-function handler(targetThis: Record<any, any>) {
+function handler(targetThis: Record<any, any>, t?: any) {
 	handleDecorator<[]>(targetThis, Ref.MetadataKey, store => {
 		const { key } = store
 		const keyVal = ref(targetThis[key as string])
 		const refs = getCurrentInstance()?.proxy.$refs
+		t && (t[key] = keyVal)
 		Object.defineProperty(targetThis, key, {
 			enumerable: true,
 			configurable: true,

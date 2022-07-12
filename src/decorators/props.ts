@@ -18,7 +18,7 @@ function handler(target: any) {
 		} else {
 			type = Reflect.getMetadata('design:type', target.prototype, store.key)
 		}
-		props = Object.assign(props, resolveProps(new type()))
+		Object.assign(props, resolveProps(new type()))
 	})
 	return props
 }
@@ -26,7 +26,7 @@ function handler(target: any) {
 function resolveProps(props: Record<string, any>) {
 	const targetProps: Record<string, PropOptions<string>> = {}
 	for (const key in props) {
-		if (props[key]) {
+		if (props[key] !== undefined) {
 			targetProps[key] = {
 				default: props[key]
 			}

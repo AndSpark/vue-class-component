@@ -20,7 +20,8 @@ class WordService {
 // 组件Props使用class声明，同时可设置默认值
 class WordProps {
 	name?: string = '1234'
-	title: string
+	title?: string
+	setName?: (name: string) => void
 	slots?: {
 		name?: () => VNode
 		say?: (name: string) => VNode
@@ -56,10 +57,12 @@ class Word {
 	}
 
 	click() {
-		console.log(this.vueComponent.$vnode)
+		console.log(this)
 		this.wordService.hello()
 		this.vueComponent.$emit('test', 'dddddd')
 		this.number++
+		this.$props.setName?.(this.$props.name + 'aaa')
+		console.log(this.$props)
 	}
 
 	@Watch((o: Word) => o.number, { immediate: true, deep: true })
@@ -88,18 +91,30 @@ class Word {
 	providers: [WordService]
 })
 export default class ParentWord {
+	@Ref() name: string = 'aaa'
+
+	setName(name: string) {
+		console.log(this)
+		this.name = name
+	}
+
 	render() {
 		return (
 			<div>
 				<Word
+					setName={(name: string) => {
+						this.name = name
+					}}
+					name={this.name}
 					title='12344'
 					attrs={{ a: '1234' }}
 					slots={{ say: name => <div>我的名字：{name}</div> }}
 				></Word>
 				哈哈哈哈哈哈
 				<Word
-					title='12344'
-					class='12344'
+					setName={(name: string) => {
+						this.name = name
+					}}
 					style={'color:red'}
 					slots={{ say: name => <div>我的名字：{name}</div> }}
 				></Word>

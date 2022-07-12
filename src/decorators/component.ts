@@ -88,11 +88,23 @@ export function Component(options?: ComponentOptions) {
 							}
 						}
 					}
-
-					handlerList.forEach(handler => handler.handler(pro))
+					const state: any = {}
+					handlerList.forEach(handler => handler.handler(pro, state))
 
 					delete instance.$props
-					return reactive(pro)
+					const pro2 = new Proxy(pro, {
+						get(target, key) {
+							if (state[key] !== undefined) {
+								return state[key]
+							}
+							return target[key]
+						},
+						set(target, key, value) {
+							target[key] = value
+							return true
+						}
+					})
+					return pro2
 				},
 				render() {
 					return pro.render.call(this, h)
