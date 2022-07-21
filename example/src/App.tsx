@@ -107,6 +107,7 @@ export default class ParentWord {
 					}}
 					name={this.name}
 					title='12344'
+					class='dddd'
 					attrs={{ a: '1234' }}
 					slots={{ say: name => <div>我的名字：{name}</div> }}
 				></Word>

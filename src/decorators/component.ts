@@ -1,13 +1,4 @@
-import {
-	defineComponent,
-	getCurrentInstance,
-	h,
-	inject,
-	InjectionKey,
-	provide,
-	reactive,
-	toRefs
-} from 'vue-demi'
+import { defineComponent, getCurrentInstance, h, inject, InjectionKey, provide } from 'vue-demi'
 import Vue from 'vue'
 import { computedHandler } from './computed'
 import { propsHandler } from './props'
@@ -52,70 +43,30 @@ export interface ComponentOptions {
 }
 
 const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler, HookHandler]
-const ignoreKeys = ['class', 'style', '$props']
+
 export function Component(options?: ComponentOptions) {
 	return function (Component: any) {
 		const proto = Component.prototype
 		const props = propsHandler.handler(Component)
+		const vueOptions = defineComponent({
+			name: proto.name || Component.name,
+			props: props,
+			setup(props) {
+				const instance = resolveComponent(Component)
+				instance.$props = props
+				handlerList.forEach(handler => handler.handler(instance))
 
-		Component.options__value = () => {
-			let pro: any
-			return defineComponent({
-				name: proto.name || Component.name,
-				props: props,
-				setup(props) {
-					const instance = resolveComponent(Component)
-					const descriptors = Object.getOwnPropertyDescriptors(proto)
-					const currentInstance = getCurrentInstance()!.proxy
-					pro = new Proxy(instance, {
-						get(target, key) {
-							if (target[key]) {
-								return target[key]
-							}
-							//@ts-ignore
-							return currentInstance[key]
-						},
-						set(target, key, value) {
-							target[key] = value
-							return true
-						}
-					})
+				return instance.render.bind(instance, h)
+			}
+		})
 
-					for (const key in descriptors) {
-						if (key !== 'render' && key !== 'constructor') {
-							if (typeof descriptors[key].value === 'function') {
-								instance[key] = instance[key].bind(pro)
-							}
-						}
-					}
-					const state: any = {}
-					handlerList.forEach(handler => handler.handler(pro, state))
-
-					delete instance.$props
-					const pro2 = new Proxy(pro, {
-						get(target, key) {
-							if (state[key] !== undefined) {
-								return state[key]
-							}
-							return target[key]
-						},
-						set(target, key, value) {
-							target[key] = value
-							return true
-						}
-					})
-					return pro2
-				},
-				render() {
-					return pro.render.call(this, h)
-				}
-			})
+		//@ts-ignore
+		const Extended = Vue.extend(vueOptions)
+		const params = Reflect.getMetadata('design:paramtypes', Component) as any[] | undefined
+		if (params?.length || options?.providers?.length) {
+			Reflect.defineMetadata(MetadataKey, options, Component)
+			Injectable()(Component)
 		}
-
-		const Extended = Vue.extend(Component.options__value()) as any
-
-		Reflect.defineMetadata(MetadataKey, options, Component)
-		Injectable()(Component)
 
 		return Extended
 	}

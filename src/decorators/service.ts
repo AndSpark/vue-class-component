@@ -1,3 +1,4 @@
+import { Injectable } from 'injection-js'
 import { computedHandler } from './computed'
 import { HookHandler } from './hook'
 import { refHandler } from './ref'
