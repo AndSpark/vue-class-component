@@ -53,7 +53,11 @@ export function Component(options?: ComponentOptions) {
 			props: props,
 			setup(props) {
 				const instance = resolveComponent(Component)
-				instance.$props = props
+				Object.defineProperty(instance, '$props', {
+					get() {
+						return props
+					}
+				})
 				handlerList.forEach(handler => handler.handler(instance))
 				return instance.render.bind(instance, h)
 			}
@@ -67,7 +71,7 @@ export function Component(options?: ComponentOptions) {
 			Injectable()(Component)
 		}
 
-		return Extended
+		return Extended as any
 	}
 }
 
