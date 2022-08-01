@@ -32,7 +32,7 @@ class WordProps {
 @Component()
 class Word extends Vue {
 	// 服务类会自动依赖注入，在constructor中的函数相当于在setup中运行
-	constructor(@SkipSelf() private wordService: WordService) {
+	constructor(private wordService: WordService) {
 		super()
 	}
 
@@ -55,11 +55,10 @@ class Word extends Vue {
 
 	@Hook(['onMounted'])
 	hooks() {
-		console.log(this)
+		console.log(this.$props)
 	}
 
 	click() {
-		console.log(this)
 		this.wordService.hello()
 		this.vueComponent.$emit('test', 'dddddd')
 		this.number++
