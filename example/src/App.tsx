@@ -30,9 +30,11 @@ class WordProps {
 
 //组件使用@Component装饰器声明
 @Component()
-class Word {
+class Word extends Vue {
 	// 服务类会自动依赖注入，在constructor中的函数相当于在setup中运行
-	constructor(@SkipSelf() private wordService: WordService) {}
+	constructor(@SkipSelf() private wordService: WordService) {
+		super()
+	}
 
 	// 如果要使用组件内方法，需先进行声明
 	vueComponent = useVueComponent()
@@ -53,7 +55,7 @@ class Word {
 
 	@Hook(['onMounted'])
 	hooks() {
-		console.log('onMounted')
+		console.log(this)
 	}
 
 	click() {
@@ -67,7 +69,7 @@ class Word {
 
 	@Watch((o: Word) => o.number, { immediate: true, deep: true })
 	test(newval: any, oldVal: any) {
-		console.log(newval, oldVal)
+		console.log(1111)
 	}
 
 	render() {
@@ -76,8 +78,8 @@ class Word {
 				<button ref='btnRef' onClick={() => this.click()}>
 					++
 				</button>
-				{this.number}
-				{this.val}
+				<p>{this.number}</p>
+				<p>{this.val}</p>
 				{this.$props.name}
 				{/* 插槽使用 */}
 				{this.$props.slots?.say?.(String(this.number))}

@@ -55,7 +55,6 @@ export function Component(options?: ComponentOptions) {
 				const instance = resolveComponent(Component)
 				instance.$props = props
 				handlerList.forEach(handler => handler.handler(instance))
-
 				return instance.render.bind(instance, h)
 			}
 		})

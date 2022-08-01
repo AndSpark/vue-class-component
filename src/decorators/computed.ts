@@ -8,7 +8,7 @@ interface ComputedDecorator {
 
 export const Computed: ComputedDecorator = createDecorator('Computed')
 
-function handler(targetThis: Record<any, any>, t?: any) {
+function handler(targetThis: Record<any, any>) {
 	handleDecorator<[]>(
 		targetThis,
 		Computed.MetadataKey,
@@ -19,7 +19,6 @@ function handler(targetThis: Record<any, any>, t?: any) {
 				get: () => desc.get?.call(targetThis),
 				set: val => desc.set?.call(targetThis, val)
 			})
-			t && (t[key] = keyVal)
 
 			Object.defineProperty(targetThis, key, {
 				enumerable: true,
