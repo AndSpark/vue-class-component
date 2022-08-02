@@ -1,4 +1,4 @@
-import { computed } from 'vue-demi'
+import { computed, getCurrentInstance } from 'vue-demi'
 import { createDecorator, handleDecorator } from './utils'
 
 interface ComputedDecorator {
@@ -19,17 +19,20 @@ function handler(targetThis: Record<any, any>) {
 				get: () => desc.get?.call(targetThis),
 				set: val => desc.set?.call(targetThis, val)
 			})
-
-			Object.defineProperty(targetThis, key, {
-				enumerable: true,
-				configurable: true,
-				get() {
-					return keyVal.value
-				},
-				set(v) {
-					keyVal.value = v
-				}
-			})
+			const define = (v: any) => {
+				Object.defineProperty(v, key, {
+					enumerable: true,
+					configurable: true,
+					get() {
+						return keyVal.value
+					},
+					set(v) {
+						keyVal.value = v
+					}
+				})
+			}
+			define(targetThis)
+			define(getCurrentInstance()!.proxy)
 		},
 		true
 	)

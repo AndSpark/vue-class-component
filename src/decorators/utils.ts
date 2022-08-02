@@ -64,3 +64,14 @@ export function handleDecorator<T extends any[]>(
 		handler(store)
 	}
 }
+
+export function getProps(instance: any): string[] {
+	const prototype = Object.getPrototypeOf(instance)
+	if (prototype && prototype.__proto__ !== null && prototype !== null) {
+		return [
+			...getProps(prototype),
+			...Object.getOwnPropertyNames(prototype).filter(prop => prop !== 'constructor')
+		]
+	}
+	return []
+}

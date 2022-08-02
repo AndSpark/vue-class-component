@@ -30,11 +30,9 @@ class WordProps {
 
 //组件使用@Component装饰器声明
 @Component()
-class Word extends Vue {
+class Word {
 	// 服务类会自动依赖注入，在constructor中的函数相当于在setup中运行
-	constructor(private wordService: WordService) {
-		super()
-	}
+	constructor(private wordService: WordService) {}
 
 	// 如果要使用组件内方法，需先进行声明
 	vueComponent = useVueComponent()
@@ -54,16 +52,15 @@ class Word extends Vue {
 	}
 
 	@Hook(['onMounted'])
-	hooks() {
-		console.log(this.$props)
-	}
+	hooks() {}
 
 	click() {
 		this.wordService.hello()
 		this.vueComponent.$emit('test', 'dddddd')
 		this.number++
 		this.$props.setName?.(this.$props.name + 'aaa')
-		console.log(this.$props)
+		//@ts-ignore
+		console.log(this.vueComponent.$parent.val)
 	}
 
 	@Watch((o: Word) => o.number, { immediate: true, deep: true })
@@ -93,16 +90,28 @@ class Word extends Vue {
 })
 export default class ParentWord {
 	@Ref() name: string = 'aaa'
+	@Ref() word: Word
 
 	setName(name: string) {
 		console.log(this)
 		this.name = name
 	}
 
+	@Computed()
+	get val() {
+		return this.word.number
+	}
+
+	@Hook('onMounted')
+	init() {
+		console.log(this.word)
+	}
+
 	render() {
 		return (
 			<div>
 				<Word
+					ref='word'
 					setName={(name: string) => {
 						this.name = name
 					}}

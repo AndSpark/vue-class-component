@@ -16,6 +16,7 @@ import {
 	SkipSelf,
 	TypeProvider
 } from 'injection-js'
+import { getProps } from './utils'
 
 export const InjectorKey: InjectionKey<ReflectiveInjector> = Symbol('ReflectiveInjector')
 
@@ -53,13 +54,30 @@ export function Component(options?: ComponentOptions) {
 			props: props,
 			setup(props) {
 				const instance = resolveComponent(Component)
-				Object.defineProperty(instance, '$props', {
-					get() {
-						return props
+				const vueComponent = getCurrentInstance()!.proxy
+				const proxy = new Proxy(instance, {
+					get(target, key) {
+						if (target[key] === undefined) {
+							//@ts-ignore
+							return vueComponent[key]
+						}
+						return target[key]
 					}
 				})
+				const keys = [...Object.keys(instance), ...getProps(instance)].filter(v => {
+					return v !== 'render' && v !== '$props'
+				})
 				handlerList.forEach(handler => handler.handler(instance))
-				return instance.render.bind(instance, h)
+				keys.forEach(k => {
+					Object.defineProperty(vueComponent, k, {
+						enumerable: true,
+						configurable: true,
+						get() {
+							return instance[k]
+						}
+					})
+				})
+				return instance.render.bind(proxy, h)
 			}
 		})
 
