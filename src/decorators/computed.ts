@@ -32,7 +32,6 @@ function handler(targetThis: Record<any, any>) {
 				})
 			}
 			define(targetThis)
-			define(getCurrentInstance()!.proxy)
 		},
 		true
 	)

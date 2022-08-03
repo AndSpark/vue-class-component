@@ -54,6 +54,7 @@ export function Component(options?: ComponentOptions) {
 			props: props,
 			setup(props) {
 				const instance = resolveComponent(Component)
+				instance.$props = props
 				const vueComponent = getCurrentInstance()!.proxy
 				const proxy = new Proxy(instance, {
 					get(target, key) {
@@ -64,20 +65,33 @@ export function Component(options?: ComponentOptions) {
 						return target[key]
 					}
 				})
-				const keys = [...Object.keys(instance), ...getProps(instance)].filter(v => {
-					return v !== 'render' && v !== '$props'
-				})
-				handlerList.forEach(handler => handler.handler(instance))
-				keys.forEach(k => {
-					Object.defineProperty(vueComponent, k, {
-						enumerable: true,
-						configurable: true,
+				handlerList.forEach(handler => handler.handler(proxy))
+				const propsKey = Object.keys(instance)
+				propsKey.forEach(key => {
+					if (key === '$props') return
+					Object.defineProperty(vueComponent, key, {
 						get() {
-							return instance[k]
+							return proxy[key]
 						}
 					})
 				})
-				return instance.render.bind(proxy, h)
+				const keys = Object.getOwnPropertyNames(proto)
+				keys.forEach(key => {
+					if (key === 'constructor' || key === 'render') {
+						return
+					}
+					const descriptor = Object.getOwnPropertyDescriptor(proto, key)!
+					if (descriptor.get || descriptor.set) {
+						descriptor.get = descriptor.get?.bind(proxy)
+						descriptor.set = descriptor.set?.bind(proxy)
+					}
+					if (typeof descriptor.value === 'function') {
+						instance[key] = descriptor.value.bind(proxy)
+						//@ts-ignore
+						vueComponent[key] = descriptor.value.bind(proxy)
+					}
+				})
+				return proto.render.bind(proxy, h)
 			}
 		})
 

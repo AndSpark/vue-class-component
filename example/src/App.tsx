@@ -55,8 +55,6 @@ class Word {
 	hooks() {}
 
 	click() {
-		this.wordService.hello()
-		this.vueComponent.$emit('test', 'dddddd')
 		this.number++
 		this.$props.setName?.(this.$props.name + 'aaa')
 		//@ts-ignore
@@ -112,9 +110,7 @@ export default class ParentWord {
 			<div>
 				<Word
 					ref='word'
-					setName={(name: string) => {
-						this.name = name
-					}}
+					setName={e => this.setName(e)}
 					name={this.name}
 					title='12344'
 					class='dddd'
