@@ -58,7 +58,8 @@ export function Component(options?: ComponentOptions) {
 				const vueComponent = getCurrentInstance()!.proxy
 				const proxy = new Proxy(instance, {
 					get(target, key) {
-						if (target[key] === undefined) {
+						//@ts-ignore
+						if (key[0] === '$') {
 							//@ts-ignore
 							return vueComponent[key]
 						}
