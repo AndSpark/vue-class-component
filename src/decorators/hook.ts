@@ -8,7 +8,7 @@ import {
 	onMounted,
 	onServerPrefetch,
 	onUnmounted,
-	onUpdated
+	onUpdated,
 } from 'vue-demi'
 import { createDecorator, handleDecorator } from './utils'
 
@@ -22,7 +22,7 @@ const lifecycle = {
 	onMounted,
 	onServerPrefetch,
 	onUnmounted,
-	onUpdated
+	onUpdated,
 }
 
 type Lifecycle =
@@ -36,6 +36,7 @@ type Lifecycle =
 	| 'onServerPrefetch'
 	| 'onUnmounted'
 	| 'onUpdated'
+	| 'onSetup'
 
 export const Hook: HookDecorator = createDecorator('Hook', true)
 
@@ -53,11 +54,34 @@ function handler(targetThis: Record<any, any>) {
 			if (!desc || !args.length) return
 			args.forEach(arg => {
 				arg.forEach(v => {
+					if (v === 'onSetup') return
 					if (typeof v === 'string') {
 						lifecycle[v]?.(desc.value.bind(targetThis))
 					}
 					if (Array.isArray(v)) {
-						v.forEach(x => lifecycle[x]?.(desc.value.bind(targetThis)))
+						v.forEach(x => x !== 'onSetup' && lifecycle[x]?.(desc.value.bind(targetThis)))
+					}
+				})
+			})
+		},
+		true
+	)
+}
+
+export function onSetup(targetThis: Record<any, any>) {
+	handleDecorator<[Lifecycle | Lifecycle[]]>(
+		targetThis,
+		Hook.MetadataKey,
+		store => {
+			const { desc, args } = store
+			if (!desc || !args.length) return
+			args.forEach(arg => {
+				arg.forEach(v => {
+					if (v === 'onSetup') {
+						desc.value.call(targetThis)
+					}
+					if (Array.isArray(v)) {
+						v.forEach(x => x === 'onSetup' && desc.value.call(targetThis))
 					}
 				})
 			})
@@ -68,5 +92,5 @@ function handler(targetThis: Record<any, any>) {
 
 export const HookHandler = {
 	key: 'Hook',
-	handler
+	handler,
 }

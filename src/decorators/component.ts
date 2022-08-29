@@ -5,7 +5,7 @@ import { propsHandler } from './props'
 import { refHandler } from './ref'
 import { watchHandler } from './watch'
 import { watchEffectHandler } from './watchEffect'
-import { HookHandler } from './hook'
+import { HookHandler, onSetup } from './hook'
 import {
 	ClassProvider,
 	Injectable,
@@ -14,7 +14,7 @@ import {
 	ReflectiveInjector,
 	ResolvedReflectiveProvider,
 	SkipSelf,
-	TypeProvider
+	TypeProvider,
 } from 'injection-js'
 import { getProps } from './utils'
 
@@ -64,7 +64,7 @@ export function Component(options?: ComponentOptions) {
 							return vueComponent[key]
 						}
 						return target[key]
-					}
+					},
 				})
 				handlerList.forEach(handler => handler.handler(proxy))
 				const propsKey = Object.keys(instance)
@@ -73,7 +73,7 @@ export function Component(options?: ComponentOptions) {
 					Object.defineProperty(vueComponent, key, {
 						get() {
 							return proxy[key]
-						}
+						},
 					})
 				})
 				const keys = Object.getOwnPropertyNames(proto)
@@ -92,8 +92,9 @@ export function Component(options?: ComponentOptions) {
 						vueComponent[key] = descriptor.value.bind(proxy)
 					}
 				})
+				onSetup(proxy)
 				return proto.render.bind(proxy, h)
-			}
+			},
 		})
 
 		//@ts-ignore

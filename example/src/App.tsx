@@ -51,8 +51,10 @@ class Word {
 		return this.number * 2
 	}
 
-	@Hook(['onMounted'])
-	hooks() {}
+	@Hook('onSetup')
+	hooks() {
+		console.log(this.$props)
+	}
 
 	click() {
 		this.number++
@@ -84,7 +86,7 @@ class Word {
 
 // 父级组件提供服务，可在子组件中共享
 @Component({
-	providers: [WordService]
+	providers: [WordService],
 })
 export default class ParentWord {
 	@Ref() name: string = 'aaa'
