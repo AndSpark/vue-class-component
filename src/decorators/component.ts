@@ -186,3 +186,29 @@ export function resolveDependencies(inputs: Provider[]) {
 
 	return Array.from(deps)
 }
+
+/**
+ * 获取当前的注射器，可用于外部使用
+ */
+export function getCurrentInjector(): ReflectiveInjector {
+	const instance = getCurrentInstance()
+	// @ts-ignore
+	return instance.provides[InjectorKey] || inject(InjectorKey)
+}
+/** 手动创建当前注射器, 只能用在 setup 中 */
+export function createCurrentInjector(
+	providers: Provider[],
+	exclude?: Provider[]
+): ReflectiveInjector {
+	let deps = resolveDependencies(providers)
+	if (exclude?.length) {
+		deps = deps.filter(k => exclude?.includes(k))
+	}
+	const resolveProviders = ReflectiveInjector.resolve(deps)
+	const parent = inject(InjectorKey, undefined)
+	const injector = ReflectiveInjector.fromResolvedProviders(resolveProviders, parent)
+	provide(InjectorKey, injector)
+	// 实例化
+	resolveProviders.forEach(k => injector.get(k.key.token))
+	return injector
+}
