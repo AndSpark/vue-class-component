@@ -11,7 +11,7 @@ export function Service() {
 	return function classDecorator<T extends { new (...args: any[]): {} }>(constructor: T) {
 		return class extends constructor {
 			constructor(...args: any[]) {
-				super()
+				super(...args)
 				handlerList.forEach(handler => handler.handler(this))
 			}
 		}
