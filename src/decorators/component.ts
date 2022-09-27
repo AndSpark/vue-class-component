@@ -59,9 +59,12 @@ export function Component(options?: ComponentOptions) {
 				const proxy = new Proxy(instance, {
 					get(target, key) {
 						//@ts-ignore
-						if (key[0] === '$') {
-							//@ts-ignore
-							return vueComponent[key]
+						if (key[0] === '$' || key[0] === '_') {
+							if (!target[key]) {
+								//@ts-ignore
+								return vueComponent[key]
+							}
+							return target[key]
 						}
 						return target[key]
 					},
