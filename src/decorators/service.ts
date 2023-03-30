@@ -1,11 +1,4 @@
-import { Injectable } from 'injection-js'
-import { computedHandler } from './computed'
-import { HookHandler } from './hook'
-import { refHandler } from './ref'
-import { watchHandler } from './watch'
-import { watchEffectHandler } from './watchEffect'
-
-const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler, HookHandler]
+import { handlerList } from './handlers'
 
 export function Service() {
 	return function classDecorator<T extends { new (...args: any[]): {} }>(constructor: T) {
@@ -15,5 +8,11 @@ export function Service() {
 				handlerList.forEach(handler => handler.handler(this))
 			}
 		}
+	}
+}
+
+export class VueService {
+	constructor() {
+		handlerList.forEach(handler => handler.handler(this))
 	}
 }

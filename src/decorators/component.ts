@@ -1,11 +1,8 @@
 import { defineComponent, getCurrentInstance, h, inject, InjectionKey, provide } from 'vue-demi'
 import Vue from 'vue'
-import { computedHandler } from './computed'
+
 import { propsHandler } from './props'
-import { refHandler } from './ref'
-import { watchHandler } from './watch'
-import { watchEffectHandler } from './watchEffect'
-import { HookHandler, onSetup } from './hook'
+import { onSetup } from './hook'
 import {
 	ClassProvider,
 	Injectable,
@@ -16,7 +13,7 @@ import {
 	SkipSelf,
 	TypeProvider,
 } from 'injection-js'
-import { getProps } from './utils'
+import { handlerList } from './handlers'
 
 export const InjectorKey: InjectionKey<ReflectiveInjector> = Symbol('ReflectiveInjector')
 
@@ -42,8 +39,6 @@ export interface ComponentOptions {
 	 */
 	stable?: boolean
 }
-
-const handlerList = [refHandler, computedHandler, watchHandler, watchEffectHandler, HookHandler]
 
 export function Component(options?: ComponentOptions) {
 	return function (Component: any) {

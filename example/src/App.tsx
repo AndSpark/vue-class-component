@@ -4,9 +4,10 @@ import { useCurrentInstance, useVueComponent } from '../../src/helper'
 import { Component, Computed, Props, Watch, Ref, WatchEffect, Hook, Service } from '../../src/index'
 import Vue from 'vue'
 import { VueComponentProps } from '../../src/types'
+import { VueService } from '../../src/decorators/service'
 // 服务类使用@Service装饰器
-@Service()
-class WordService {
+// @Service()
+class WordService extends VueService {
 	@Ref()
 	title: string = 'hello'
 
@@ -57,6 +58,7 @@ class Word {
 	}
 
 	click() {
+		this.wordService.hello()
 		this.number++
 		this.$props.setName?.(this.$props.name + 'aaa')
 		//@ts-ignore
