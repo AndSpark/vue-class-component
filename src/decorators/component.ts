@@ -210,3 +210,23 @@ export function createCurrentInjector(
 	resolveProviders.forEach(k => injector.get(k.key.token))
 	return injector
 }
+
+
+/**
+ * 从当前容器中获取服务
+ * @param token
+ * @param notFoundValue
+ */
+export function injectService<T extends { new (...args: any[]): any }>(
+  token: T,
+  notFoundValue?: any
+): InstanceType<T> | undefined
+export function injectService<T>(
+  token: string | number | symbol,
+  notFoundValue?: any
+): T | undefined {
+  const currentInjector = getCurrentInjector()
+  if (!currentInjector) return notFoundValue
+
+  return currentInjector.get(token, notFoundValue)
+}

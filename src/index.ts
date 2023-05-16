@@ -1,4 +1,4 @@
-export { Component } from './decorators/component'
+export * from './decorators/component'
 export { Service } from './decorators/service'
 export { Computed } from './decorators/computed'
 export { Props } from './decorators/props'
