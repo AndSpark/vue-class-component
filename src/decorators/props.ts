@@ -27,8 +27,15 @@ function resolveProps(props: Record<string, any>) {
 	const targetProps: Record<string, PropOptions<string>> = {}
 	for (const key in props) {
 		if (props[key] !== undefined) {
-			targetProps[key] = {
-				default: props[key]
+			const value = props[key]
+			if (typeof value === 'object') {
+				targetProps[key] = {
+					default: () => value,
+				}
+			} else {
+				targetProps[key] = {
+					default: value,
+				}
 			}
 		} else {
 			targetProps[key] = {}
@@ -40,5 +47,5 @@ function resolveProps(props: Record<string, any>) {
 
 export const propsHandler = {
 	key: 'Props',
-	handler
+	handler,
 }
