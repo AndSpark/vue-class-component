@@ -103,6 +103,14 @@ export function Component(options?: ComponentOptions) {
 			Injectable()(Component)
 		}
 
+		for (const key in Component) {
+			if (Object.prototype.hasOwnProperty.call(Component, key)) {
+				const element = Component[key]
+				//@ts-ignore
+				Extended[key] ||= element
+			}
+		}
+
 		return Extended as any
 	}
 }
@@ -211,22 +219,21 @@ export function createCurrentInjector(
 	return injector
 }
 
-
 /**
  * 从当前容器中获取服务
  * @param token
  * @param notFoundValue
  */
 export function injectService<T extends { new (...args: any[]): any }>(
-  token: T,
-  notFoundValue?: any
+	token: T,
+	notFoundValue?: any
 ): InstanceType<T> | undefined
 export function injectService<T>(
-  token: string | number | symbol,
-  notFoundValue?: any
+	token: string | number | symbol,
+	notFoundValue?: any
 ): T | undefined {
-  const currentInjector = getCurrentInjector()
-  if (!currentInjector) return notFoundValue
+	const currentInjector = getCurrentInjector()
+	if (!currentInjector) return notFoundValue
 
-  return currentInjector.get(token, notFoundValue)
+	return currentInjector.get(token, notFoundValue)
 }
