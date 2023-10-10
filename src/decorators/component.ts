@@ -199,7 +199,7 @@ export function resolveDependencies(inputs: Provider[]) {
 export function getCurrentInjector(): ReflectiveInjector {
 	const instance = getCurrentInstance()
 	// @ts-ignore
-	return instance.provides[InjectorKey] || inject(InjectorKey)
+	return instance.provides?.[InjectorKey] || inject(InjectorKey)
 }
 /** 手动创建当前注射器, 只能用在 setup 中 */
 export function createCurrentInjector(
